@@ -4,7 +4,6 @@
 }
 .textContainer{
     flex: 1;
-    gap: 120px;
     display: flex;
     flex-direction: column;
     gap: 50px;
