@@ -4,7 +4,7 @@ const Footer = () => {
     <div className={styles.container}>
       <div className={styles.logo}>Anubha</div>
       <div className={styles.text}>
-        Anubha creative thoughts agency &copy; All rights reserved
+        Anubha's creative thoughts agency &copy; All rights reserved
       </div>
     </div>
   );
