@@ -1,70 +1,61 @@
 import Image from "next/image";
 import styles from "./singlePage.module.css";
+import PostUser from "@/components/postUser/PostUser";
+import { Suspense } from "react";
+import { getPost } from "@/lib/data";
 
-const SinglePostPage = () => {
+//  FETCH DATA WITH AN API
+// const getData = async (slug) => {
+//   // no-cache is used if we do not want to cache data
+//   const res = await fetch(
+//     `https://jsonplaceholder.typicode.com/posts/${slug}`,
+//     { cache: "no-store" }
+//   );
+//   if (!res.ok) {
+//     throw new Error("Something went wrong");
+//   }
+//   return res.json();
+// };
+
+export const generateMetadata = async ({ params }) => {
+  const { slug } = params;
+  const post = await getPost(slug);
+  return {
+    title: post.title,
+    description: post.desc,
+  };
+};
+
+const SinglePostPage = async ({ params }) => {
+  const { slug } = params;
+  // FETCH DATA WITH AN API
+  // const post = await getData(slug);
+
+  // FETCH DATA WITHOUT AN API
+  const post = await getPost(slug);
   return (
     <div className={styles.container}>
       <div className={styles.imgContainer}>
-        <Image
-          src="https://images.unsplash.com/photo-1682686581551-867e0b208bd1?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-          alt="Iamge"
-          fill
-          className={styles.img}
-        />
+        <Image src={post?.img} fill className={styles.img} />
       </div>
       <div className={styles.textContainer}>
-        <h1 className={styles.title}>Title</h1>
+        <h1 className={styles.title}>{post?.title}</h1>
         <div className={styles.detail}>
-          <Image
-            className={styles.avatar}
-            src="https://images.unsplash.com/photo-1682686581551-867e0b208bd1?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            alt="image"
-            height={50}
-            width={50}
-          />
-          <div className={styles.detailText}>
-            <span className={styles.detailTitle}>Author</span>
-            <span className={styles.detailValue}>Amy Jackson</span>
-          </div>
+          {post && (
+            <Suspense fallback={<div>Loading...</div>}>
+              <PostUser userId={post?.userId} />
+            </Suspense>
+          )}
+
           <div className={styles.detailText}>
             <span className={styles.detailTitle}>Published</span>
-            <span className={styles.detailValue}>01.01.2024</span>
+            <span className={styles.detailValue}>
+              {post.createdAt.toString().slice(4, 16)}
+            </span>
           </div>
         </div>
 
-        <div className={styles.content}>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae nihil
-          dolorum sit? Aperiam voluptates laudantium maxime aliquam, aspernatur
-          magnam autem?
-          <br />
-          <br />
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus in
-          adipisci ad, voluptate blanditiis totam vero et necessitatibus aperiam
-          amet, facilis nam voluptatem molestias iusto? Lorem ipsum dolor sit
-          amet, consectetur adipisicing elit. Quidem natus aspernatur ex ullam
-          totam possimus harum dolore aliquam quam, animi maxime quas amet at.
-          Cum id nulla assumenda expedita eaque vel consequuntur excepturi, et,
-          minima nam enim consectetur rem laboriosam ipsum blanditiis
-          voluptatibus totam quae! Dolor perspiciatis cumque quae error, a
-          sapiente quibusdam ex voluptatem optio et impedit omnis repellat
-          quidem nesciunt velit fugiat mollitia nam minus asperiores
-          consequatur, tempora distinctio vitae consectetur. Expedita quasi
-          neque perferendis aliquid quo voluptas, ex consequatur et nobis. Vero,
-          repellendus officia libero maxime excepturi nobis atque dolor impedit
-          magni quis explicabo molestiae neque illum.
-          <br />
-          <br />
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum iste
-          cupiditate est culpa quos facilis id fugit minima. Obcaecati
-          asperiores iure dolores commodi, doloremque architecto iusto voluptas
-          praesentium expedita autem nesciunt sed amet modi necessitatibus?
-          Nihil, nesciunt laborum molestias dolor officia aut maiores veritatis
-          eius.
-          <br />
-          <br />
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Provident
-          voluptate voluptatibus ipsum.
-        </div>
+        <div className={styles.content}>{post.desc}</div>
       </div>
     </div>
   );
